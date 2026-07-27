@@ -3,7 +3,7 @@ import { supabase, isSupabaseConfigured, getEditKey } from './supabase'
 export interface Article {
   id: string
   title: string
-  category: 'SQL & Database' | 'Scripts' | 'Guides' | 'Config'
+  category: 'المشاريع' | 'الإجراءات' | 'الشركة' | 'أسئلة شائعة'
   content: string
   createdAt: number
   updatedAt: number
@@ -22,11 +22,11 @@ interface ArticleFromSupabase {
 }
 
 const STORAGE_KEY = 'kb_articles'
-const CATEGORIES: Array<'SQL & Database' | 'Scripts' | 'Guides' | 'Config'> = [
-  'SQL & Database',
-  'Scripts',
-  'Guides',
-  'Config',
+const CATEGORIES: Array<'المشاريع' | 'الإجراءات' | 'الشركة' | 'أسئلة شائعة'> = [
+  'المشاريع',
+  'الإجراءات',
+  'الشركة',
+  'أسئلة شائعة',
 ]
 
 // Helper to convert Supabase article format to App format
@@ -34,7 +34,7 @@ function supabaseToApp(data: ArticleFromSupabase): Article {
   return {
     id: data.id,
     title: data.title,
-    category: data.category as 'SQL & Database' | 'Scripts' | 'Guides' | 'Config',
+    category: data.category as 'المشاريع' | 'الإجراءات' | 'الشركة' | 'أسئلة شائعة',
     content: data.content || '',
     createdAt: new Date(data.created_at).getTime(),
     updatedAt: new Date(data.updated_at).getTime(),
@@ -115,7 +115,7 @@ export class ArticleManager {
       {
         id: 'sql-db-1',
         title: 'RLS policies cheat-sheet',
-        category: 'SQL & Database',
+        category: 'المشاريع',
         content: `# RLS policies cheat-sheet
 
 Row Level Security (RLS) is essential for protecting database tables in Supabase. This guide covers enabling RLS and creating common policies.
@@ -174,7 +174,7 @@ ORDER BY policyname;
       {
         id: 'scripts-1',
         title: 'Bulk client import script',
-        category: 'Scripts',
+        category: 'الإجراءات',
         content: `# Bulk client import script
 
 This JavaScript snippet reads rows from a data source and inserts them into a Supabase table in batches, handling duplicates by phone number.
@@ -241,7 +241,7 @@ console.log(\`Done! Imported: \${result.imported}, Duplicates: \${result.duplica
       {
         id: 'guides-1',
         title: 'Deploy to GitHub Pages',
-        category: 'Guides',
+        category: 'الشركة',
         content: `# Deploy to GitHub Pages
 
 Step-by-step guide to deploying your Next.js static site to GitHub Pages.
@@ -303,7 +303,7 @@ For better performance, import the GitHub repo into Cloudflare Pages:
       {
         id: 'config-1',
         title: 'Supabase environment variables',
-        category: 'Config',
+        category: 'أسئلة شائعة',
         content: `# Supabase environment variables
 
 Configuration guide for connecting your app to Supabase. These variables enable database access, authentication, and real-time features.

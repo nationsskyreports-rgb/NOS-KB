@@ -10,10 +10,10 @@ interface SidebarProps {
 }
 
 const CATEGORY_COLORS = {
-  'SQL & Database': '#8b5cf6',
-  'Scripts': '#2563eb',
-  'Guides': '#10b981',
-  'Config': '#f59e0b',
+  'المشاريع': '#2563eb',
+  'الإجراءات': '#f59e0b',
+  'الشركة': '#10b981',
+  'أسئلة شائعة': '#8b5cf6',
 }
 
 export default function Sidebar({

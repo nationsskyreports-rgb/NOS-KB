@@ -25,8 +25,8 @@ export default function EditorModal({
   const [tab, setTab] = useState<'write' | 'preview'>('write')
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState<
-    'SQL & Database' | 'Scripts' | 'Guides' | 'Config'
-  >('Guides')
+    'المشاريع' | 'الإجراءات' | 'الشركة' | 'أسئلة شائعة'
+  >('المشاريع')
   const [content, setContent] = useState('')
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function EditorModal({
       setContent(article.content)
     } else {
       setTitle('')
-      setCategory('Guides')
+      setCategory('المشاريع')
       setContent('')
     }
     setTab('write')
@@ -180,10 +180,10 @@ export default function EditorModal({
               onChange={(e) =>
                 setCategory(
                   e.target.value as
-                    | 'SQL & Database'
-                    | 'Scripts'
-                    | 'Guides'
-                    | 'Config'
+                    | 'المشاريع'
+                    | 'الإجراءات'
+                    | 'الشركة'
+                    | 'أسئلة شائعة'
                 )
               }
               className="w-full px-3 py-2 border rounded-[7px] text-sm focus:outline-none focus:border-blue-500 focus:ring-3 focus:ring-blue-100"
@@ -193,10 +193,10 @@ export default function EditorModal({
                 background: 'var(--surface)',
               }}
             >
-              <option>SQL & Database</option>
-              <option>Scripts</option>
-              <option>Guides</option>
-              <option>Config</option>
+              <option>المشاريع</option>
+              <option>الإجراءات</option>
+              <option>الشركة</option>
+              <option>أسئلة شائعة</option>
             </select>
           </div>
 
