@@ -225,6 +225,7 @@ function AuthModal({
 }) {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [showKey, setShowKey] = useState(false)
 
   const handleSubmit = async () => {
     if (!password.trim()) return
@@ -269,22 +270,32 @@ function AuthModal({
           </div>
         )}
 
-        <input
-          type="password"
-          placeholder="Edit key"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !isLoading) handleSubmit()
-          }}
-          className="w-full px-3 py-2 border rounded mb-4"
-          style={{
-            borderColor: 'var(--border)',
-            color: 'var(--ink)',
-          }}
-          disabled={isLoading}
-          autoFocus
-        />
+        <div className="relative mb-4">
+          <input
+            type={showKey ? 'text' : 'password'}
+            placeholder="Edit key"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !isLoading) handleSubmit()
+            }}
+            className="w-full px-3 py-2 border rounded pr-12"
+            style={{
+              borderColor: 'var(--border)',
+              color: 'var(--ink)',
+            }}
+            disabled={isLoading}
+            autoFocus
+          />
+          <button
+            type="button"
+            onClick={() => setShowKey(!showKey)}
+            className="absolute top-1/2 right-3 -translate-y-1/2 text-sm"
+            style={{ color: 'var(--muted)' }}
+          >
+            {showKey ? '🙈' : '👁️'}
+          </button>
+        </div>
         <div className="flex gap-2">
           <button
             onClick={onClose}
