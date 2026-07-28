@@ -1,5 +1,7 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+
 interface TopbarProps {
   isAdmin: boolean
   onLoginClick: () => void
@@ -15,6 +17,11 @@ export default function Topbar({
   onSearchClick,
   onNewArticle,
 }: TopbarProps) {
+  const [isMac, setIsMac] = useState(false)
+
+  useEffect(() => {
+    setIsMac(navigator.platform?.toLowerCase().includes('mac'))
+  }, [])
   return (
     <header
       className="sticky top-0 z-50 h-[64px] flex items-center gap-5 px-6 border-b"
@@ -88,7 +95,7 @@ export default function Topbar({
               color: 'var(--muted)',
               boxShadow: '0 1px 0 var(--border)',
             }}
-          >⌘</kbd>
+          >{isMac ? '⌘' : 'Ctrl'}</kbd>
           <kbd
             className="text-[11px] px-[7px] py-[2px] rounded-md border font-mono"
             style={{
