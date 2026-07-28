@@ -4,8 +4,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'NOS Knowledge Base',
-  description: 'Comprehensive knowledge base and documentation',
-  generator: 'v0.app',
+  description: 'NOS internal knowledge base and documentation',
   icons: {
     icon: [
       {
@@ -28,7 +27,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   colorScheme: 'light',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fafbfc' },
+    { media: '(prefers-color-scheme: light)', color: '#f0f4f8' },
   ],
 }
 

@@ -10,12 +10,11 @@ interface CommandPaletteProps {
   onSelect: (article: Article) => void
 }
 
-const CATEGORY_COLORS = {
-  SQL: '#8b5cf6',
-  Script: '#2563eb',
-  Guide: '#10b981',
-  Config: '#f59e0b',
-  API: '#ec4899',
+const CATEGORY_GRADIENTS: Record<string, string> = {
+  'المشاريع':    'linear-gradient(135deg, #6366f1, #2563eb)',
+  'الإجراءات':   'linear-gradient(135deg, #f59e0b, #ef4444)',
+  'الشركة':      'linear-gradient(135deg, #10b981, #06b6d4)',
+  'أسئلة شائعة': 'linear-gradient(135deg, #8b5cf6, #ec4899)',
 }
 
 export default function CommandPalette({
@@ -66,168 +65,153 @@ export default function CommandPalette({
 
   return (
     <div
-      className="fixed inset-0 z-100 flex items-start justify-center pt-[12vh] px-6 animate-fade"
+      className="fixed inset-0 z-100 flex items-start justify-center pt-[12vh] px-6"
       style={{
-        background: 'rgba(15,23,42,.4)',
-        backdropFilter: 'blur(3px)',
+        background: 'rgba(15,23,42,.5)',
+        backdropFilter: 'blur(8px)',
       }}
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[560px] bg-white rounded-[14px] shadow-lg overflow-hidden"
+        className="w-full max-w-[580px] rounded-2xl overflow-hidden animate-pop"
         onClick={(e) => e.stopPropagation()}
         style={{
-          animation: 'pop .16s cubic-bezier(.2,.8,.2,1)',
+          background: 'var(--surface)',
+          boxShadow: '0 24px 64px rgba(15,23,42,.2), 0 8px 24px rgba(15,23,42,.1)',
+          border: '1px solid var(--border)',
         }}
       >
+        {/* Gradient accent */}
+        <div className="h-[3px]" style={{ background: 'linear-gradient(90deg, #6366f1, #2563eb, #06b6d4, #8b5cf6)' }} />
+
         {/* Input */}
         <div
-          className="flex items-center gap-[11px] px-[18px] py-4 border-b"
+          className="flex items-center gap-3 px-5 py-4 border-b"
           style={{ borderColor: 'var(--border)' }}
         >
-          <svg
-            className="w-5 h-5 flex-shrink-0"
-            fill="none"
-            stroke="currentColor"
-            style={{ color: 'var(--faint)' }}
-            viewBox="0 0 24 24"
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #eef4ff, #f0f0ff)',
+              border: '1px solid var(--blue-100)',
+            }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
+            <svg className="w-4 h-4" fill="none" stroke="#6366f1" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
           <input
             ref={inputRef}
             type="text"
-            placeholder="Search articles..."
+            placeholder="ابحث عن مقال..."
             value={query}
             onChange={(e) => {
               setQuery(e.target.value)
               setSelectedIndex(0)
             }}
-            className="flex-1 text-base outline-none"
-            style={{
-              color: 'var(--ink)',
-              fontFamily: 'var(--font-ui)',
-            }}
+            className="flex-1 text-[15px] outline-none bg-transparent"
+            style={{ color: 'var(--ink)' }}
             autoFocus
           />
+          <kbd
+            className="text-[11px] px-2 py-1 rounded-md border"
+            style={{
+              background: 'var(--surface-2)',
+              borderColor: 'var(--border)',
+              color: 'var(--faint)',
+            }}
+          >
+            ESC
+          </kbd>
         </div>
 
         {/* Results */}
         <div
-          className="max-h-[360px] overflow-y-auto p-2"
-          style={{ background: 'var(--surface)' }}
+          className="max-h-[380px] overflow-y-auto p-2"
+          style={{ background: 'var(--surface-2)' }}
         >
           {results.length === 0 ? (
-            <div
-              className="p-6 text-center"
-              style={{ color: 'var(--muted)' }}
-            >
-              No articles found
+            <div className="p-8 text-center" style={{ color: 'var(--muted)' }}>
+              <div className="text-3xl mb-3">🔍</div>
+              <p className="text-sm">مفيش نتائج</p>
             </div>
-            ) : (
-            results.map((article, idx) => (
-              <div
-                key={article.id}
-                className="px-3 py-2 rounded-[7px] cursor-pointer transition-all"
-                style={{
-                  background:
-                    selectedIndex === idx
-                      ? 'var(--blue-50)'
-                      : 'transparent',
-                }}
-                onClick={() => onSelect(article)}
-                onMouseEnter={() => setSelectedIndex(idx)}
-              >
-                <div className="flex items-center gap-3">
+          ) : (
+            <div className="stagger-children">
+              {results.map((article, idx) => {
+                const catGrad = CATEGORY_GRADIENTS[article.category] || CATEGORY_GRADIENTS['المشاريع']
+                return (
                   <div
-                    className="w-[30px] h-[30px] rounded-[7px] flex items-center justify-center text-sm flex-shrink-0"
-                    style={{ background: 'var(--surface-2)' }}
+                    key={article.id}
+                    className="px-3 py-[10px] rounded-xl cursor-pointer transition-all duration-150 animate-slideInLeft"
+                    style={{
+                      background: selectedIndex === idx ? 'var(--surface)' : 'transparent',
+                      boxShadow: selectedIndex === idx ? 'var(--sh-sm)' : 'none',
+                    }}
+                    onClick={() => onSelect(article)}
+                    onMouseEnter={() => setSelectedIndex(idx)}
                   >
-                    📄
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-[34px] h-[34px] rounded-xl flex items-center justify-center text-sm flex-shrink-0 text-white"
+                        style={{
+                          background: catGrad,
+                          boxShadow: selectedIndex === idx ? '0 2px 8px rgba(99,102,241,.2)' : 'none',
+                        }}
+                      >
+                        {article.icon || '📄'}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[14px] font-semibold truncate" style={{ color: 'var(--ink)' }}>
+                          {article.title}
+                        </div>
+                        <div className="text-[12px]" style={{ color: 'var(--muted)' }}>
+                          {article.category}
+                        </div>
+                      </div>
+                      {selectedIndex === idx && (
+                        <div
+                          className="text-[10px] px-2 py-1 rounded-md font-mono"
+                          style={{ background: 'var(--surface-2)', color: 'var(--faint)' }}
+                        >
+                          ⏎
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div
-                      className="text-[14px] font-medium truncate"
-                      style={{
-                        color: 'var(--ink)',
-                      }}
-                    >
-                      {article.title}
-                    </div>
-                    <div
-                      className="text-[12px]"
-                      style={{
-                        color: 'var(--muted)',
-                      }}
-                    >
-                      {article.category}
-                    </div>
-                  </div>
-                  {selectedIndex === idx && (
-                    <div
-                      className="text-[11px]"
-                      style={{ color: 'var(--faint)' }}
-                    >
-                      ⏎
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))
+                )
+              })}
+            </div>
           )}
         </div>
 
         {/* Footer */}
         <div
-          className="flex items-center gap-4 px-4 py-3 border-t text-[11.5px]"
+          className="flex items-center gap-5 px-5 py-3 border-t text-[11.5px]"
           style={{
             borderColor: 'var(--border)',
-            background: 'var(--surface-2)',
+            background: 'var(--surface)',
             color: 'var(--muted)',
           }}
         >
           <div className="flex items-center gap-[5px]">
             <kbd
-              className="px-[5px] py-[1px] rounded text-[10px] border"
-              style={{
-                background: 'var(--white)',
-                borderColor: 'var(--border)',
-                fontFamily: 'var(--font-mono)',
-              }}
-            >
-              ↑↓
-            </kbd>
+              className="px-[6px] py-[2px] rounded-md text-[10px] border font-mono"
+              style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}
+            >↑↓</kbd>
             Navigate
           </div>
           <div className="flex items-center gap-[5px]">
             <kbd
-              className="px-[5px] py-[1px] rounded text-[10px] border"
-              style={{
-                background: 'var(--white)',
-                borderColor: 'var(--border)',
-                fontFamily: 'var(--font-mono)',
-              }}
-            >
-              ⏎
-            </kbd>
+              className="px-[6px] py-[2px] rounded-md text-[10px] border font-mono"
+              style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}
+            >⏎</kbd>
             Select
           </div>
           <div className="flex items-center gap-[5px]">
             <kbd
-              className="px-[5px] py-[1px] rounded text-[10px] border"
-              style={{
-                background: 'var(--white)',
-                borderColor: 'var(--border)',
-                fontFamily: 'var(--font-mono)',
-              }}
-            >
-              Esc
-            </kbd>
+              className="px-[6px] py-[2px] rounded-md text-[10px] border font-mono"
+              style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}
+            >Esc</kbd>
             Close
           </div>
         </div>

@@ -23,15 +23,12 @@ export default function Home() {
   useEffect(() => {
     const initializeApp = async () => {
       const manager = new ArticleManager()
-      // Supabase is the source of truth — pull the latest list.
       const allArticles = await manager.loadArticlesFromSupabase()
       setArticles(allArticles)
 
       if (allArticles.length > 0 && !selectedArticleId) {
         setSelectedArticleId(allArticles[0].id)
       }
-      // Editing stays locked until the passphrase is entered
-      // (the key is never persisted, so every visit starts read-only).
     }
 
     initializeApp()
@@ -40,12 +37,10 @@ export default function Home() {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Command/Ctrl + K for search
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
         setShowPalette(true)
       }
-      // Escape to close modals
       if (e.key === 'Escape') {
         setShowPalette(false)
         setShowEditor(false)
@@ -101,7 +96,6 @@ export default function Home() {
     setShowAuthModal(true)
   }
 
-  // Unlock editing with the shared passphrase (verified against the DB).
   const handleAdminLogin = async (_email: string, password: string) => {
     setAuthError('')
     const ok = await verifyEditKey(password)
@@ -121,7 +115,6 @@ export default function Home() {
 
   const selectedArticle = articles.find((a) => a.id === selectedArticleId)
 
-  // Update body class when admin status changes
   useEffect(() => {
     if (typeof document !== 'undefined') {
       if (isAdmin) {
@@ -238,87 +231,117 @@ function AuthModal({
     <div
       className="fixed inset-0 flex items-center justify-center p-6 z-100"
       style={{
-        background: 'rgba(15,23,42,.45)',
-        backdropFilter: 'blur(3px)',
+        background: 'rgba(15,23,42,.5)',
+        backdropFilter: 'blur(8px)',
       }}
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md bg-white rounded-lg shadow-lg p-6"
+        className="w-full max-w-md rounded-2xl overflow-hidden animate-pop"
         onClick={(e) => e.stopPropagation()}
+        style={{
+          background: 'var(--surface)',
+          boxShadow: 'var(--sh-lg)',
+          border: '1px solid var(--border)',
+        }}
       >
-        <h3
-          className="text-lg font-bold mb-2"
-          style={{ color: 'var(--ink)' }}
-        >
-          Unlock editing
-        </h3>
-        <p style={{ color: 'var(--muted)', fontSize: '13px', marginBottom: '16px' }}>
-          Enter the edit key to add or change articles
-        </p>
+        {/* Gradient accent */}
+        <div className="h-[3px]" style={{ background: 'linear-gradient(90deg, #6366f1, #2563eb, #06b6d4)' }} />
 
-        {error && (
+        <div className="p-7">
           <div
-            className="mb-4 px-3 py-2 rounded text-sm border"
+            className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4"
             style={{
-              borderColor: '#fca5a5',
-              background: '#fee2e2',
-              color: '#991b1b',
+              background: 'linear-gradient(135deg, #eef4ff, #f0f0ff)',
+              border: '1px solid var(--blue-100)',
             }}
           >
-            {error}
+            🔐
           </div>
-        )}
+          <h3
+            className="text-lg font-bold mb-2"
+            style={{ color: 'var(--ink)' }}
+          >
+            Unlock editing
+          </h3>
+          <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '20px' }}>
+            Enter the edit key to add or change articles
+          </p>
 
-        <div className="relative mb-4">
-          <input
-            type={showKey ? 'text' : 'password'}
-            placeholder="Edit key"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !isLoading) handleSubmit()
-            }}
-            className="w-full px-3 py-2 border rounded pr-12"
-            style={{
-              borderColor: 'var(--border)',
-              color: 'var(--ink)',
-            }}
-            disabled={isLoading}
-            autoFocus
-          />
-          <button
-            type="button"
-            onClick={() => setShowKey(!showKey)}
-            className="absolute top-1/2 right-3 -translate-y-1/2 text-sm"
-            style={{ color: 'var(--muted)' }}
-          >
-            {showKey ? '🙈' : '👁️'}
-          </button>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2 border rounded"
-            style={{
-              borderColor: 'var(--border)',
-              color: 'var(--ink-2)',
-            }}
-            disabled={isLoading}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="flex-1 px-4 py-2 rounded text-white"
-            style={{ 
-              backgroundColor: isLoading ? '#93c5fd' : 'var(--blue-600)',
-              opacity: isLoading ? 0.7 : 1,
-            }}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Signing in...' : 'Login'}
-          </button>
+          {error && (
+            <div
+              className="mb-5 px-4 py-3 rounded-xl text-sm"
+              style={{
+                background: 'linear-gradient(135deg, #fee2e2, #fef2f2)',
+                border: '1px solid #fca5a5',
+                color: '#991b1b',
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          <div className="relative mb-5">
+            <input
+              type={showKey ? 'text' : 'password'}
+              placeholder="Edit key"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !isLoading) handleSubmit()
+              }}
+              className="w-full px-4 py-[10px] border rounded-xl pr-12 transition-all duration-200"
+              style={{
+                borderColor: 'var(--border)',
+                color: 'var(--ink)',
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = '#6366f1'
+                e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99,102,241,.1)'
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = 'var(--border)'
+                e.currentTarget.style.boxShadow = 'none'
+              }}
+              disabled={isLoading}
+              autoFocus
+            />
+            <button
+              type="button"
+              onClick={() => setShowKey(!showKey)}
+              className="absolute top-1/2 right-3 -translate-y-1/2 text-sm"
+              style={{ color: 'var(--muted)' }}
+            >
+              {showKey ? '🙈' : '👁️'}
+            </button>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-[10px] border rounded-xl text-[13.5px] font-semibold transition-all duration-200 hover:bg-gray-50"
+              style={{
+                borderColor: 'var(--border)',
+                color: 'var(--ink-2)',
+              }}
+              disabled={isLoading}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSubmit}
+              className="flex-1 px-4 py-[10px] rounded-xl text-white text-[13.5px] font-semibold transition-all duration-200"
+              style={{
+                background: isLoading
+                  ? 'linear-gradient(135deg, #93c5fd, #a5b4fc)'
+                  : 'linear-gradient(135deg, #6366f1, #2563eb)',
+                boxShadow: isLoading ? 'none' : '0 2px 10px rgba(99,102,241,.3)',
+                opacity: isLoading ? 0.7 : 1,
+              }}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Signing in...' : 'Login'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
