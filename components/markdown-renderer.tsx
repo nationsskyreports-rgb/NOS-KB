@@ -125,7 +125,7 @@ export default function RenderMarkdown({ content }: RenderMarkdownProps) {
       // H2
       if (line.startsWith('## ') && !line.startsWith('### ')) {
         const text = line.replace(/^## /, '')
-        const headingId = text.toLowerCase().replace(/[^\w\s\u0600-\u06FF]/g, '').replace(/\s+/g, '-')
+        const headingId = text.toLowerCase().replace(/[^\w\s\u0600-\u06FF]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, '')
         result.push(
           <h2
             key={`h2-${id++}`}
@@ -147,7 +147,7 @@ export default function RenderMarkdown({ content }: RenderMarkdownProps) {
       // H3
       if (line.startsWith('### ')) {
         const text = line.replace(/^### /, '')
-        const headingId = text.toLowerCase().replace(/[^\w\s\u0600-\u06FF]/g, '').replace(/\s+/g, '-')
+        const headingId = text.toLowerCase().replace(/[^\w\s\u0600-\u06FF]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, '')
         result.push(
           <h3
             key={`h3-${id++}`}
