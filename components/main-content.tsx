@@ -48,7 +48,7 @@ export default function MainContent({
       .map((line) => {
         const level = line.startsWith('### ') ? 3 : 2
         const text = line.replace(/^#+\s/, '')
-        const id = text.toLowerCase().replace(/[^\w\s\u0600-\u06FF]/g, '').replace(/\s+/g, '-')
+        const id = text.toLowerCase().replace(/[^\w\s\u0600-\u06FF]/g, '').replace(/\s+/g, '-').replace(/^-+|-+$/g, '')
         return { id, text, level }
       })
   }, [article])
