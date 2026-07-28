@@ -85,8 +85,11 @@ export default function Sidebar({
                     style={{ background: 'var(--blue-600)' }}
                   />
                 )}
-                <span className="text-[14px] opacity-85 w-4 text-center">📄</span>
+                <span className="text-[14px] opacity-85 w-4 text-center">{article.icon || '📄'}</span>
                 <span className="flex-1 text-left truncate">{article.title}</span>
+                {Date.now() - article.updatedAt < 7 * 24 * 60 * 60 * 1000 && (
+                  <span className="text-[9px] font-bold px-[5px] py-[1px] rounded-full flex-shrink-0" style={{ background: "#dcfce7", color: "#15803d" }}>🆕</span>
+                )}
               </button>
             ))}
           </div>
