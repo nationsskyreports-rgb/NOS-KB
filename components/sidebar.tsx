@@ -9,147 +9,92 @@ interface SidebarProps {
   onNewArticle: () => void
 }
 
-const CATEGORY_META: Record<string, { gradient: string; emoji: string; glow: string }> = {
-  'المشاريع':    { gradient: 'linear-gradient(135deg, #6366f1, #2563eb)', emoji: '🏗️', glow: 'rgba(99,102,241,.4)' },
-  'الإجراءات':   { gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)', emoji: '⚙️', glow: 'rgba(245,158,11,.4)' },
-  'الشركة':      { gradient: 'linear-gradient(135deg, #10b981, #06b6d4)', emoji: '🏢', glow: 'rgba(16,185,129,.4)' },
-  'أسئلة شائعة': { gradient: 'linear-gradient(135deg, #8b5cf6, #ec4899)', emoji: '❓', glow: 'rgba(139,92,246,.4)' },
+const CATEGORY_STYLE: Record<string, { color: string; gradient: string; emoji: string }> = {
+  'المشاريع':      { color: '#2563eb', gradient: 'linear-gradient(135deg, #2563eb, #3b82f6)', emoji: '🏗️' },
+  'الإجراءات':     { color: '#f59e0b', gradient: 'linear-gradient(135deg, #f59e0b, #fbbf24)', emoji: '📋' },
+  'الشركة':        { color: '#10b981', gradient: 'linear-gradient(135deg, #10b981, #34d399)', emoji: '🏢' },
+  'أسئلة شائعة':   { color: '#8b5cf6', gradient: 'linear-gradient(135deg, #8b5cf6, #a78bfa)', emoji: '❓' },
 }
 
-export default function Sidebar({
-  articles,
-  selectedArticleId,
-  onSelectArticle,
-  onNewArticle,
-}: SidebarProps) {
+function isRecent(ts: number) { return Date.now() - ts < 7 * 24 * 60 * 60 * 1000 }
+
+export default function Sidebar({ articles, selectedArticleId, onSelectArticle, onNewArticle }: SidebarProps) {
   const manager = new ArticleManager()
   const categories = manager.getCategories()
 
   return (
     <aside
-      className="w-[280px] flex-shrink-0 h-[calc(100vh-64px)] sticky top-[64px] overflow-y-auto p-4 pb-10 dark-scrollbar"
-      style={{
-        background: 'linear-gradient(195deg, #0f172a 0%, #1e293b 100%)',
-      }}
+      className="w-[280px] flex-shrink-0 h-[calc(100vh-60px)] sticky top-[60px] overflow-y-auto border-r px-3 py-5 pb-10"
+      style={{ borderColor: 'var(--border)', background: 'var(--surface)' }}
     >
-      {/* Header */}
-      <div className="flex items-center gap-2 px-3 pt-2 pb-4 mb-1">
-        <span className="text-[20px]">📚</span>
-        <span
-          className="text-[13px] font-bold tracking-wide"
-          style={{ color: 'rgba(255,255,255,.5)' }}
-        >
-          المحتوى
-        </span>
-      </div>
+      {categories.map((category) => {
+        const categoryArticles = articles.filter((a) => a.category === category)
+        if (categoryArticles.length === 0) return null
+        const style = CATEGORY_STYLE[category] || { color: '#64748b', gradient: '#64748b', emoji: '📄' }
 
-      <div className="stagger-children">
-        {categories.map((category) => {
-          const categoryArticles = articles.filter((a) => a.category === category)
-          if (categoryArticles.length === 0) return null
-
-          const meta = CATEGORY_META[category] || CATEGORY_META['المشاريع']
-
-          return (
-            <div key={category} className="mb-5 animate-slideInLeft">
-              {/* Category Header */}
-              <div className="flex items-center gap-[10px] px-3 pb-2 mb-[6px]">
-                <div
-                  className="w-[22px] h-[22px] rounded-lg flex items-center justify-center text-[11px]"
-                  style={{
-                    background: meta.gradient,
-                    boxShadow: `0 2px 8px ${meta.glow}`,
-                  }}
-                >
-                  {meta.emoji}
-                </div>
-                <span
-                  className="text-[12px] font-bold uppercase tracking-wider flex-1"
-                  style={{ color: 'rgba(255,255,255,.45)' }}
-                >
-                  {category}
-                </span>
-                <span
-                  className="text-[11px] font-bold px-[8px] py-[2px] rounded-full"
-                  style={{
-                    background: 'rgba(255,255,255,.08)',
-                    color: 'rgba(255,255,255,.35)',
-                  }}
-                >
-                  {categoryArticles.length}
-                </span>
+        return (
+          <div key={category} className="mb-[20px]">
+            {/* Category header card */}
+            <div
+              className="flex items-center gap-[8px] px-[10px] py-[6px] rounded-[8px] mb-[6px]"
+              style={{ background: style.color + '0a' }}
+            >
+              <div
+                className="w-[22px] h-[22px] rounded-[6px] flex items-center justify-center text-[11px]"
+                style={{ background: style.gradient, color: 'white', fontSize: '12px' }}
+              >
+                {style.emoji}
               </div>
-
-              {/* Article Items */}
-              {categoryArticles.map((article) => {
-                const isActive = selectedArticleId === article.id
-                return (
-                  <button
-                    key={article.id}
-                    onClick={() => onSelectArticle(article.id)}
-                    className="w-full flex items-center gap-[10px] px-3 py-[9px] rounded-xl text-[13.5px] font-medium transition-all duration-150 group relative"
-                    style={{
-                      color: isActive ? '#fff' : 'rgba(226,232,240,.75)',
-                      background: isActive
-                        ? 'rgba(99,102,241,.2)'
-                        : 'transparent',
-                      fontWeight: isActive ? 600 : 450,
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = 'rgba(255,255,255,.06)'
-                        e.currentTarget.style.color = '#fff'
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = 'transparent'
-                        e.currentTarget.style.color = 'rgba(226,232,240,.75)'
-                      }
-                    }}
-                  >
-                    {isActive && (
-                      <div
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full"
-                        style={{ background: meta.gradient, boxShadow: `0 0 8px ${meta.glow}` }}
-                      />
-                    )}
-                    <span className="text-[14px] opacity-80 w-4 text-center flex-shrink-0">
-                      {article.icon || '📄'}
-                    </span>
-                    <span className="flex-1 text-left truncate">{article.title}</span>
-                    {Date.now() - article.updatedAt < 7 * 24 * 60 * 60 * 1000 && (
-                      <span
-                        className="text-[9px] font-bold px-[6px] py-[2px] rounded-full flex-shrink-0"
-                        style={{
-                          background: 'linear-gradient(135deg, #10b981, #06b6d4)',
-                          color: '#fff',
-                        }}
-                      >
-                        NEW
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
+              <span className="text-[12px] font-bold" style={{ color: style.color }}>
+                {category}
+              </span>
+              <span
+                className="ml-auto text-[10px] font-bold w-[20px] h-[20px] rounded-full flex items-center justify-center"
+                style={{ background: style.color + '15', color: style.color }}
+              >
+                {categoryArticles.length}
+              </span>
             </div>
-          )
-        })}
-      </div>
 
-      {/* Add New (admin-only, hidden by default) */}
-      <button
-        onClick={onNewArticle}
-        className="w-full flex items-center gap-2 px-3 py-[9px] rounded-xl text-[13px] font-semibold border border-dashed mt-4 transition-all duration-200 hidden"
-        style={{
-          color: 'rgba(99,102,241,.7)',
-          borderColor: 'rgba(99,102,241,.25)',
-        }}
-        id="nav-add"
-      >
-        <span>+</span>
-        <span>Add Article</span>
-      </button>
+            {/* Articles */}
+            {categoryArticles.map((article) => {
+              const selected = selectedArticleId === article.id
+              const recent = isRecent(article.updatedAt)
+              return (
+                <button
+                  key={article.id}
+                  onClick={() => onSelectArticle(article.id)}
+                  className="w-full flex items-center gap-[8px] px-[10px] py-[8px] rounded-[8px] text-[13px] transition-all duration-150 group relative"
+                  style={{
+                    color: selected ? 'var(--blue-700)' : 'var(--ink-2)',
+                    background: selected ? 'var(--blue-50)' : 'transparent',
+                    fontWeight: selected ? 600 : 450,
+                    boxShadow: selected ? '0 1px 3px rgba(37,99,235,.1)' : 'none',
+                  }}
+                >
+                  {selected && (
+                    <div
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[16px] rounded-full"
+                      style={{ background: style.gradient }}
+                    />
+                  )}
+                  <span className="text-[13px] w-4 text-center flex-shrink-0 opacity-80">
+                    {article.icon || style.emoji}
+                  </span>
+                  <span className="flex-1 text-left truncate">{article.title}</span>
+                  {recent && (
+                    <span
+                      className="w-[8px] h-[8px] rounded-full flex-shrink-0 animate-pulse"
+                      style={{ background: '#10b981', boxShadow: '0 0 6px rgba(16,185,129,.4)' }}
+                      title="تم التحديث مؤخراً"
+                    />
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        )
+      })}
     </aside>
   )
 }
